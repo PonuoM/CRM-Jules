@@ -16,7 +16,7 @@ $userId = $_SESSION['user_id'] ?? 0;
 <!-- Sidebar -->
 <div class="col-md-3 col-lg-2 sidebar p-0">
     <div class="p-3">
-        <h6 class="text-muted mb-3">เมนูหลัก</h6>
+        <h6 class="mb-3">เมนูหลัก</h6>
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link <?php echo ($currentPage === 'dashboard') ? 'active' : ''; ?>" href="dashboard.php">
