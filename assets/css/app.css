@@ -79,7 +79,18 @@
   
   /* Other */
   --border-radius: 0.75rem; /* More rounded corners */
-  --transition: all 0.2s ease-in-out;
+  --transition: all 0.3s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Base Styles */
@@ -517,6 +528,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .main-content {
   padding: 2rem;
   background: var(--light-bg);
+  animation: fadeInUp 0.5s ease-in-out;
 }
 
 /* Responsive Design */
