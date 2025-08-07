@@ -173,20 +173,40 @@ class Auth {
      */
     public function createUser($userData) {
         try {
-            // Hash password
-            $userData['password_hash'] = password_hash($userData['password'], PASSWORD_DEFAULT);
-            unset($userData['password']); // Remove plain password
+            // 1. Validate data (basic example)
+            if (empty($userData['username']) || empty($userData['password']) || empty($userData['full_name']) || empty($userData['role_id'])) {
+                return ['success' => false, 'message' => 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อผู้ใช้, รหัสผ่าน, ชื่อ-นามสกุล, บทบาท)'];
+            }
+
+            // Check for duplicate username
+            $sql = "SELECT user_id FROM users WHERE username = :username";
+            $existingUser = $this->db->fetchOne($sql, ['username' => $userData['username']]);
+            if ($existingUser) {
+                return ['success' => false, 'message' => 'ชื่อผู้ใช้นี้มีอยู่แล้วในระบบ'];
+            }
+
+            // 2. Prepare data for insertion
+            $insertData = [
+                'username' => $userData['username'],
+                'password_hash' => password_hash($userData['password'], PASSWORD_DEFAULT),
+                'full_name' => $userData['full_name'],
+                'email' => $userData['email'] ?? null,
+                'phone' => $userData['phone'] ?? null,
+                'role_id' => $userData['role_id'],
+                'company_id' => $userData['company_id'] ?? null,
+                'is_active' => 1,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
             
-            // Set default values
-            $userData['is_active'] = 1;
-            $userData['created_at'] = date('Y-m-d H:i:s');
-            
-            $userId = $this->db->insert('users', $userData);
+            // 3. Insert into database
+            $userId = $this->db->insert('users', $insertData);
             
             return ['success' => true, 'user_id' => $userId];
             
         } catch (Exception $e) {
-            return ['success' => false, 'message' => 'เกิดข้อผิดพลาดในการสร้างผู้ใช้'];
+            // Log the actual error for debugging
+            // error_log("Error in createUser: " . $e->getMessage());
+            return ['success' => false, 'message' => 'เกิดข้อผิดพลาดในการสร้างผู้ใช้: ' . $e->getMessage()];
         }
     }
     
