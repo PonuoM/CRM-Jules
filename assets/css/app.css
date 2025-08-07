@@ -50,33 +50,36 @@
 }
 
 :root {
-  /* Minimalist Pastel Color Palette */
-  --primary-color: #7c9885; /* Soft Sage Green */
-  --secondary-color: #a8b5c4; /* Muted Blue Gray */
-  --success-color: #9bbf8b; /* Soft Mint Green */
-  --warning-color: #e6c27d; /* Soft Peach */
-  --danger-color: #d4a5a5; /* Soft Rose */
-  --text-color: #4a5568; /* Muted Dark Gray */
-  --text-muted: #718096; /* Light Gray */
-  --light-bg: #fafbfc; /* Very Light Gray Background */
-  --border-color: #e2e8f0; /* Soft Border */
-  --sidebar-bg: #f7fafc; /* Very Light Blue Gray */
-  --card-bg: #ffffff; /* Pure White for Cards */
+  /* Minimalist Corporate Color Palette */
+  --primary-color: #1A5F3C; /* Dark Green */
+  --secondary-color: #F0F0F0; /* Light Gray */
+  --success-color: #2E8B57; /* Sea Green */
+  --warning-color: #DAA520; /* Goldenrod */
+  --danger-color: #B22222; /* Firebrick */
   
-  /* Status Colors - Pastel */
-  --hot-color: #f4a6a6; /* Soft Red */
-  --warm-color: #f4d4a6; /* Soft Orange */
-  --cold-color: #a6c8f4; /* Soft Blue */
-  --frozen-color: #c8c8c8; /* Soft Gray */
+  --text-color: #000000; /* Black */
+  --text-on-dark: #FFFFFF; /* White text on dark backgrounds */
+  --text-muted: #6c757d; /* Muted Gray */
+
+  --light-bg: #FFFFFF; /* White Background */
+  --border-color: #dee2e6; /* Standard Border */
+  --sidebar-bg: #1A5F3C; /* Dark Green Sidebar */
+  --card-bg: #FFFFFF; /* White for Cards */
+
+  /* Status Colors */
+  --hot-color: #B22222; /* Firebrick */
+  --warm-color: #DAA520; /* Goldenrod */
+  --cold-color: #4682B4; /* Steel Blue */
+  --frozen-color: #6c757d; /* Gray */
   
-  /* Shadows - Softer */
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  /* Shadows */
+  --shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+  --shadow-md: 0 .5rem 1rem rgba(0,0,0,.15);
+  --shadow-lg: 0 1rem 3rem rgba(0,0,0,.175);
   
   /* Other */
-  --border-radius: 0.5rem;
-  --transition: all 0.3s ease;
+  --border-radius: 0.75rem; /* More rounded corners */
+  --transition: all 0.2s ease-in-out;
 }
 
 /* Base Styles */
@@ -84,6 +87,7 @@ body {
   font-family: 'Sukhumvit Set', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--light-bg);
   color: var(--text-color);
+  font-size: 14px; /* Base font size */
   line-height: 1.6;
   margin: 0;
   font-weight: 400;
@@ -116,7 +120,7 @@ body {
 
 .navbar-nav .nav-link:hover {
   color: var(--primary-color);
-  background-color: rgba(124, 152, 133, 0.08);
+  background-color: var(--secondary-color);
 }
 
 .navbar-text {
@@ -133,29 +137,36 @@ body {
   padding: 0;
 }
 
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-weight: 600;
+  font-size: 16px; /* Heading font size */
+}
+
 .sidebar .nav-link {
-  color: var(--text-color);
+  color: var(--text-on-dark); /* White text on dark sidebar */
+  opacity: 0.8;
   font-weight: 500;
   padding: 0.875rem 1.25rem;
   border-radius: var(--border-radius);
   margin: 0.125rem 0.75rem;
   transition: var(--transition);
-  font-size: 0.875rem;
+  font-size: 14px; /* Match base font size */
   border: none;
   background: transparent;
   font-family: 'Sukhumvit Set', sans-serif;
 }
 
 .sidebar .nav-link:hover {
-  color: var(--primary-color);
-  background-color: rgba(124, 152, 133, 0.08);
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1;
   transform: none;
 }
 
 .sidebar .nav-link.active {
-  color: var(--card-bg);
-  background-color: var(--primary-color);
+  color: var(--text-on-dark);
+  background-color: rgba(0, 0, 0, 0.2);
   font-weight: 600;
+  opacity: 1;
 }
 
 .sidebar .nav-link i {
@@ -165,7 +176,8 @@ body {
 }
 
 .sidebar h6 {
-  color: var(--text-muted);
+  color: var(--text-on-dark);
+  opacity: 0.6;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -215,12 +227,12 @@ body {
 .btn-primary {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
-  color: var(--card-bg);
+  color: var(--text-on-dark);
 }
 
 .btn-primary:hover {
-  background-color: #6b8a72;
-  border-color: #6b8a72;
+  background-color: #155234; /* A slightly darker green */
+  border-color: #155234;
   transform: none;
   box-shadow: var(--shadow-sm);
 }
@@ -318,7 +330,7 @@ body {
   background: var(--sidebar-bg);
   border-bottom: 2px solid var(--border-color);
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--text-on-dark);
   text-transform: none;
   font-size: 0.875rem;
   letter-spacing: normal;
@@ -353,7 +365,7 @@ body {
 
 .badge-primary {
   background-color: var(--primary-color);
-  color: var(--card-bg);
+  color: var(--text-on-dark);
 }
 
 .badge-success {
@@ -387,7 +399,7 @@ body {
 .form-control:focus,
 .form-select:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(124, 152, 133, 0.15);
+  box-shadow: 0 0 0 0.2rem rgba(26, 95, 60, 0.25);
   background-color: var(--card-bg);
   color: var(--text-color);
 }
