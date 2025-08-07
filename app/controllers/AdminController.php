@@ -8,19 +8,22 @@ require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../services/CustomerService.php';
 require_once __DIR__ . '/../services/OrderService.php';
-require_once __DIR__ . '/../services/WorkflowService.php'; // Added for WorkflowService
+require_once __DIR__ . '/../services/WorkflowService.php';
+require_once __DIR__ . '/../services/CompanyService.php'; // Added for CompanyService
 
 class AdminController {
     private $db;
     private $auth;
     private $customerService;
     private $orderService;
+    private $companyService;
     
     public function __construct() {
         $this->db = new Database();
         $this->auth = new Auth($this->db);
         $this->customerService = new CustomerService();
         $this->orderService = new OrderService();
+        $this->companyService = new CompanyService();
     }
     
     /**
@@ -70,44 +73,23 @@ class AdminController {
     }
     
     /**
-     * จัดการผู้ใช้
+     * USER MANAGEMENT
      */
     public function users() {
         $this->checkAdminPermission();
-        
-        $action = $_GET['action'] ?? 'list';
-        
-        switch ($action) {
-            case 'create':
-                $this->createUser();
-                break;
-            case 'edit':
-                $this->editUser();
-                break;
-            case 'delete':
-                $this->deleteUser();
-                break;
-            default:
-                $this->listUsers();
-                break;
-        }
-    }
-    
-    /**
-     * แสดงรายการผู้ใช้
-     */
-    private function listUsers() {
         $users = $this->auth->getAllUsers();
-        $roles = $this->getAllRoles();
-        $companies = $this->getAllCompanies();
-        
         include __DIR__ . '/../views/admin/users/index.php';
     }
-    
-    /**
-     * สร้างผู้ใช้ใหม่
-     */
-    private function createUser() {
+
+    public function createUser() {
+        $this->checkAdminPermission();
+        $roles = $this->getAllRoles();
+        $companies = $this->getAllCompanies();
+        include __DIR__ . '/../views/admin/users/create.php';
+    }
+
+    public function storeUser() {
+        $this->checkAdminPermission();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userData = [
                 'username' => $_POST['username'] ?? '',
@@ -126,22 +108,27 @@ class AdminController {
                 exit;
             } else {
                 $error = $result['message'];
+                // Need to reload roles and companies for the view
+                $roles = $this->getAllRoles();
+                $companies = $this->getAllCompanies();
+                include __DIR__ . '/../views/admin/users/create.php';
             }
         }
-        
+    }
+
+    public function editUser() {
+        $this->checkAdminPermission();
+        $userId = $_GET['id'] ?? 0;
+        $user = $this->auth->getUserById($userId);
         $roles = $this->getAllRoles();
         $companies = $this->getAllCompanies();
-        
-        include __DIR__ . '/../views/admin/users/create.php';
+        include __DIR__ . '/../views/admin/users/edit.php';
     }
-    
-    /**
-     * แก้ไขผู้ใช้
-     */
-    private function editUser() {
-        $userId = $_GET['id'] ?? 0;
-        
+
+    public function updateUser() {
+        $this->checkAdminPermission();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userId = $_POST['user_id'] ?? 0;
             $userData = [
                 'user_id' => $userId,
                 'username' => $_POST['username'] ?? '',
@@ -153,7 +140,6 @@ class AdminController {
                 'is_active' => isset($_POST['is_active']) ? 1 : 0
             ];
             
-            // ถ้ามีการเปลี่ยนรหัสผ่าน
             if (!empty($_POST['password'])) {
                 $userData['password'] = $_POST['password'];
             }
@@ -165,35 +151,108 @@ class AdminController {
                 exit;
             } else {
                 $error = $result['message'];
+                $user = $this->auth->getUserById($userId);
+                $roles = $this->getAllRoles();
+                $companies = $this->getAllCompanies();
+                include __DIR__ . '/../views/admin/users/edit.php';
             }
         }
-        
-        $user = $this->auth->getUserById($userId);
-        $roles = $this->getAllRoles();
-        $companies = $this->getAllCompanies();
-        
-        include __DIR__ . '/../views/admin/users/edit.php';
     }
-    
-    /**
-     * ลบผู้ใช้
-     */
-    private function deleteUser() {
+
+    public function deleteUser() {
+        $this->checkAdminPermission();
         $userId = $_GET['id'] ?? 0;
+        $result = $this->auth->deleteUser($userId);
         
+        if ($result['success']) {
+            header('Location: admin.php?action=users&message=user_deleted');
+        } else {
+            header('Location: admin.php?action=users&error=' . urlencode($result['message']));
+        }
+        exit;
+    }
+
+    /**
+     * COMPANY MANAGEMENT
+     */
+    public function companies() {
+        $this->checkAdminPermission();
+        $companies = $this->companyService->getAllCompanies();
+        include __DIR__ . '/../views/admin/companies/index.php';
+    }
+
+    public function createCompany() {
+        $this->checkAdminPermission();
+        include __DIR__ . '/../views/admin/companies/create.php';
+    }
+
+    public function storeCompany() {
+        $this->checkAdminPermission();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $result = $this->auth->deleteUser($userId);
-            
+            $companyData = [
+                'company_name' => $_POST['company_name'] ?? '',
+                'company_code' => $_POST['company_code'] ?? '',
+                'address' => $_POST['address'] ?? '',
+                'phone' => $_POST['phone'] ?? '',
+                'email' => $_POST['email'] ?? ''
+            ];
+            $result = $this->companyService->createCompany($companyData);
             if ($result['success']) {
-                header('Location: admin.php?action=users&message=user_deleted');
-                exit;
+                header('Location: admin.php?action=companies&message=company_created');
             } else {
                 $error = $result['message'];
+                include __DIR__ . '/../views/admin/companies/create.php';
             }
+        } else {
+            $this->createCompany();
         }
-        
-        $user = $this->auth->getUserById($userId);
-        include __DIR__ . '/../views/admin/users/delete.php';
+    }
+
+    public function editCompany() {
+        $this->checkAdminPermission();
+        $companyId = $_GET['id'] ?? 0;
+        $company = $this->companyService->getCompanyById($companyId);
+        if (!$company) {
+            header('Location: admin.php?action=companies&error=not_found');
+            exit;
+        }
+        include __DIR__ . '/../views/admin/companies/edit.php';
+    }
+
+    public function updateCompany() {
+        $this->checkAdminPermission();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $companyData = [
+                'company_id' => $_POST['company_id'] ?? 0,
+                'company_name' => $_POST['company_name'] ?? '',
+                'company_code' => $_POST['company_code'] ?? '',
+                'address' => $_POST['address'] ?? '',
+                'phone' => $_POST['phone'] ?? '',
+                'email' => $_POST['email'] ?? '',
+                'is_active' => isset($_POST['is_active']) ? 1 : 0
+            ];
+            $result = $this->companyService->updateCompany($companyData);
+            if ($result['success']) {
+                header('Location: admin.php?action=companies&message=company_updated');
+            } else {
+                $error = $result['message'];
+                $company = $companyData; // Pass submitted data back to the form
+                include __DIR__ . '/../views/admin/companies/edit.php';
+            }
+        } else {
+            header('Location: admin.php?action=companies');
+        }
+    }
+
+    public function deleteCompany() {
+        $this->checkAdminPermission();
+        $companyId = $_GET['id'] ?? 0;
+        $result = $this->companyService->deleteCompany($companyId);
+        if ($result['success']) {
+            header('Location: admin.php?action=companies&message=company_deleted');
+        } else {
+            header('Location: admin.php?action=companies&error=' . urlencode($result['message']));
+        }
     }
     
     /**

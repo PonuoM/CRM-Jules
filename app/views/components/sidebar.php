@@ -94,28 +94,6 @@ $userId = $_SESSION['user_id'] ?? 0;
             </li>
             <?php endif; ?>
             <!-- Note: telesales role only sees Dashboard, Customer Management, and Order Management -->
-
-                <!-- Admin/Supervisor Menu -->
-                <?php if (in_array($roleName, ['admin', 'supervisor', 'super_admin'])): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="admin.php">
-                            <i class="fas fa-cogs me-2"></i>
-                            <span>จัดการระบบ</span>
-                        </a>
-                    </li>
-                                    <li class="nav-item">
-                    <a class="nav-link" href="admin.php?action=workflow">
-                        <i class="fas fa-project-diagram me-2"></i>
-                        <span>Workflow Management</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="admin.php?action=customer_distribution">
-                        <i class="fas fa-users me-2"></i>
-                        <span>ระบบแจกลูกค้า</span>
-                    </a>
-                </li>
-                <?php endif; ?>
         </ul>
     </div>
 </div> 

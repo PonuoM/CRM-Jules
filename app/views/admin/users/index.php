@@ -31,7 +31,10 @@ $user = $_SESSION['user'] ?? null;
                         จัดการผู้ใช้
                     </h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <a href="admin.php?action=users&action=create" class="btn btn-primary">
+                        <a href="admin.php?action=companies" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-building me-2"></i>จัดการบริษัท
+                        </a>
+                        <a href="admin.php?action=users_create" class="btn btn-primary">
                             <i class="fas fa-user-plus me-2"></i>เพิ่มผู้ใช้ใหม่
                         </a>
                     </div>
